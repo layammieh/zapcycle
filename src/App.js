@@ -8,6 +8,7 @@ import CyclesPage from "./pages/admin/Cycles";
 import AnalyticsPage from "./pages/admin/Analytics";
 import SettingsPage from "./pages/admin/Settings";
 
+
 function App() {
   return (
     <BrowserRouter>
