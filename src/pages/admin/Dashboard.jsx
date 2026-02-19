@@ -83,7 +83,6 @@ const StatCard = ({ icon: Icon, label, value, change, positive, color }) => (
     </div>
 );
 
-// ── Dashboard ─────────────────────────────────────────────────────────────────
 const Dashboard = () => {
     const navigate = useNavigate();
     const [activeNav, setActiveNav] = useState("dashboard");
@@ -94,7 +93,12 @@ const Dashboard = () => {
 
     const handleNavClick = (id) => {
         setActiveNav(id);
+
+        if (id === "dashboard") navigate("/admin/dashboard");
         if (id === "users") navigate("/admin/users");
+        if (id === "cycles") navigate("/admin/cycles");
+        if (id === "analytics") navigate("/admin/analytics");
+        if (id === "settings") navigate("/admin/settings");
     };
 
     const statusBadge = (status) => {

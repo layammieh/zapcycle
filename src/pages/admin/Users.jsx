@@ -6,7 +6,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/zapcycle_logo.png";
 
-// ── Sample Users Data ─────────────────────────────────────────────────────────
 const usersData = [
     { id: "USR-001", name: "Maria Santos", email: "maria.santos@email.com", phone: "+63 912 345 6789", role: "Member", cycles: 42, status: "active", joined: "Jan 12, 2025", avatar: "MS" },
     { id: "USR-002", name: "Juan Dela Cruz", email: "juan.delacruz@email.com", phone: "+63 917 234 5678", role: "Member", cycles: 31, status: "active", joined: "Jan 18, 2025", avatar: "JD" },
@@ -47,6 +46,9 @@ const UsersPage = () => {
         setActiveNav(id);
         if (id === "dashboard") navigate("/admin/dashboard");
         if (id === "users") navigate("/admin/users");
+        if (id === "cycles") navigate("/admin/cycles");
+        if (id === "analytics") navigate("/admin/analytics");
+        if (id === "settings") navigate("/admin/settings");
     };
 
     const handleLogout = () => navigate("/login");

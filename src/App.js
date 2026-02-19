@@ -4,6 +4,7 @@ import Login from "./pages/admin/auth/Login";
 import SignUp from "./pages/admin/auth/SignUp";
 import Dashboard from "./pages/admin/Dashboard";
 import UsersPage from "./pages/admin/Users";
+import CyclesPage from "./pages/admin/Cycles";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/users" element={<UsersPage />} />
+        <Route path="/admin/cycles" element={<CyclesPage />} />
       </Routes>
     </BrowserRouter>
   );
