@@ -27,7 +27,7 @@ import {
     ChevronDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/zapcycle_logo.png";
+import logo from "../../assets/zapcycle_logo.png";
 
 // ── Sample Data ──────────────────────────────────────────────────────────────
 const cyclesData = [
@@ -92,6 +92,11 @@ const Dashboard = () => {
         navigate("/login");
     };
 
+    const handleNavClick = (id) => {
+        setActiveNav(id);
+        if (id === "users") navigate("/admin/users");
+    };
+
     const statusBadge = (status) => {
         const map = {
             active: "bg-green-100 text-green-700",
@@ -123,7 +128,7 @@ const Dashboard = () => {
                     ].map(({ id, label, icon: Icon }) => (
                         <button
                             key={id}
-                            onClick={() => setActiveNav(id)}
+                            onClick={() => handleNavClick(id)}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all w-full text-left
                 ${activeNav === id
                                     ? "bg-green-500 text-white shadow-md shadow-green-200"

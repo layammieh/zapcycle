@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/zapcycle_logo.png";
+import logo from "../../../assets/zapcycle_logo.png";
 
 const SignUp = () => {
     const navigate = useNavigate();
