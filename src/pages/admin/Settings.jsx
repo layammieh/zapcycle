@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Bell, Lock, Mail, Settings as SettingsIcon } from "lucide-react";
-import Navbar from "./components/Navbar";
+import Sidebar from "./components/Navbar";
 
 const Settings = () => {
+    const [activeNav, setActiveNav] = useState("settings"); // Active sidebar link
     const [email, setEmail] = useState("user@example.com");
     const [password, setPassword] = useState("");
     const [notifications, setNotifications] = useState(true);
@@ -13,12 +14,13 @@ const Settings = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 flex">
-            <Navbar />
+            {/* Sidebar */}
+            <Sidebar activeNav={activeNav} setActiveNav={setActiveNav} />
 
             {/* Main Content */}
             <main className="ml-64 flex-1 flex flex-col">
 
-                {/* ── Top Bar ── */}
+                {/* Top Bar */}
                 <header className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
                     <div>
                         <h1 className="text-xl font-bold text-gray-900">Settings</h1>
@@ -109,6 +111,7 @@ const Settings = () => {
                             Save Changes
                         </button>
                     </div>
+
                 </div>
             </main>
         </div>
