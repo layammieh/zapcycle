@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import {
     LayoutDashboard,
     Users,
-    RefreshCw,
-    TrendingUp,
     Settings,
     LogOut,
     X,
@@ -18,8 +16,6 @@ const Sidebar = ({ activeNav }) => {
     const handleNavClick = (id) => {
         if (id === "dashboard") navigate("/admin/dashboard");
         if (id === "users") navigate("/admin/users");
-        if (id === "cycles") navigate("/admin/cycles");
-        if (id === "analytics") navigate("/admin/analytics");
         if (id === "settings") navigate("/admin/settings");
     };
 
@@ -38,11 +34,11 @@ const Sidebar = ({ activeNav }) => {
 
     return (
         <>
-            <aside className="w-64 bg-white border-r border-gray-100 flex flex-col shadow-sm fixed h-full z-10">
+            <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 flex flex-col shadow-sm fixed h-full z-10 transition-colors">
                 {/* Logo */}
-                <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
+                <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100 dark:border-gray-800">
                     <img src={logo} alt="ZapCycle" className="w-10 h-10 object-contain" />
-                    <span className="text-xl font-bold text-gray-900">ZapCycle</span>
+                    <span className="text-xl font-bold text-gray-900 dark:text-gray-100">ZapCycle</span>
                 </div>
 
                 {/* Nav */}
@@ -50,8 +46,6 @@ const Sidebar = ({ activeNav }) => {
                     {[
                         { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
                         { id: "users", label: "Users", icon: Users },
-                        { id: "cycles", label: "Cycles", icon: RefreshCw },
-                        { id: "analytics", label: "Analytics", icon: TrendingUp },
                         { id: "settings", label: "Settings", icon: Settings },
                     ].map(({ id, label, icon: Icon }) => (
                         <button
@@ -59,8 +53,8 @@ const Sidebar = ({ activeNav }) => {
                             onClick={() => handleNavClick(id)}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all w-full text-left
                         ${activeNav === id
-                                    ? "bg-green-500 text-white shadow-md shadow-green-200"
-                                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
+                                    ? "bg-green-500 text-white shadow-md shadow-green-200 dark:shadow-none"
+                                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200"
                                 }`}
                         >
                             <Icon size={18} />
@@ -73,7 +67,7 @@ const Sidebar = ({ activeNav }) => {
                 <div className="px-4 pb-6">
                     <button
                         onClick={confirmLogout}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all w-full"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all w-full"
                     >
                         <LogOut size={18} />
                         Log Out
@@ -83,18 +77,18 @@ const Sidebar = ({ activeNav }) => {
 
             {/* Logout Confirmation Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-2xl shadow-lg w-96 p-6 relative">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg w-96 p-6 relative border border-gray-100 dark:border-gray-800">
                         {/* Close Button */}
                         <button
                             onClick={cancelLogout}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                            className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                         >
                             <X size={20} />
                         </button>
 
-                        <h2 className="text-lg font-bold text-gray-900 mb-2">Confirm Logout</h2>
-                        <p className="text-gray-500 mb-6">Are you sure you want to log out?</p>
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">Confirm Logout</h2>
+                        <p className="text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to log out?</p>
 
                         <div className="flex justify-end gap-3">
                             <button

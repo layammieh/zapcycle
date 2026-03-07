@@ -4,6 +4,7 @@ import {
     CheckCircle, XCircle, Clock, Mail, Phone, Shield, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import Navbar from "./components/Navbar";
+import TopBar from "./components/TopBar";
 import { useNavigate } from "react-router-dom";
 
 const usersData = [
@@ -64,28 +65,14 @@ const UsersPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors">
             <Navbar activeNav="users" />
 
             {/* ── Main Content ── */}
             <main className="ml-64 flex-1 flex flex-col">
 
                 {/* Top Bar */}
-                <header className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-900">Users</h1>
-                        <p className="text-gray-400 text-sm">Manage and monitor all registered users.</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <button className="relative w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors">
-                            <Bell size={18} />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full"></span>
-                        </button>
-                        <div className="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center text-white font-bold text-sm">
-                            A
-                        </div>
-                    </div>
-                </header>
+                <TopBar title="Users" subtitle="Manage and monitor all registered users." />
 
                 {/* Page Body */}
                 <div className="p-8 flex flex-col gap-6">
@@ -98,43 +85,43 @@ const UsersPage = () => {
                             { label: "Inactive", value: counts.inactive, bg: "bg-gray-50", text: "text-gray-500", icon: XCircle },
                             { label: "Pending", value: counts.pending, bg: "bg-yellow-50", text: "text-yellow-600", icon: Clock },
                         ].map(({ label, value, bg, text, icon: Icon }) => (
-                            <div key={label} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center gap-4">
+                            <div key={label} className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-5 flex items-center gap-4 transition-colors">
                                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${bg}`}>
                                     <Icon size={22} className={text} />
                                 </div>
                                 <div>
-                                    <p className="text-gray-400 text-xs font-medium">{label}</p>
-                                    <p className="text-2xl font-bold text-gray-900">{value}</p>
+                                    <p className="text-gray-400 dark:text-gray-500 text-xs font-medium">{label}</p>
+                                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
                                 </div>
                             </div>
                         ))}
                     </div>
 
                     {/* ── Table Card ── */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
 
                         {/* Table Header / Filters */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-5 border-b border-gray-100">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-5 border-b border-gray-100 dark:border-gray-800">
                             {/* Search */}
                             <div className="relative w-full sm:w-72">
-                                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                                 <input
                                     type="text"
                                     placeholder="Search by name, email or ID…"
                                     value={search}
                                     onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                                    className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent text-gray-700 placeholder-gray-400"
+                                    className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600"
                                 />
                             </div>
 
                             <div className="flex items-center gap-3">
                                 {/* Status filter */}
-                                <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2">
-                                    <Filter size={14} className="text-gray-400" />
+                                <div className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3 py-2">
+                                    <Filter size={14} className="text-gray-400 dark:text-gray-500" />
                                     <select
                                         value={filterStatus}
                                         onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
-                                        className="bg-transparent text-sm text-gray-600 focus:outline-none"
+                                        className="bg-transparent text-sm text-gray-600 dark:text-gray-300 focus:outline-none"
                                     >
                                         <option value="all">All Status</option>
                                         <option value="active">Active</option>
@@ -155,7 +142,7 @@ const UsersPage = () => {
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="text-gray-400 text-xs font-semibold uppercase tracking-wide border-b border-gray-100">
+                                    <tr className="text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wide border-b border-gray-100 dark:border-gray-800">
                                         <th className="px-6 pb-3 pt-4 text-left">User</th>
                                         <th className="px-6 pb-3 pt-4 text-left">Contact</th>
                                         <th className="px-6 pb-3 pt-4 text-left">Role</th>
@@ -165,7 +152,7 @@ const UsersPage = () => {
                                         <th className="px-6 pb-3 pt-4 text-left"></th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50">
+                                <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
                                     {paginated.length === 0 ? (
                                         <tr>
                                             <td colSpan={7} className="py-12 text-center text-gray-400 text-sm">
@@ -177,7 +164,7 @@ const UsersPage = () => {
                                         const StatusIcon = sc.icon;
                                         const colorIdx = (parseInt(user.id.replace("USR-", "")) - 1) % AVATAR_COLORS.length;
                                         return (
-                                            <tr key={user.id} className="hover:bg-gray-50 transition-colors relative">
+                                            <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors relative">
                                                 {/* User */}
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-3">
@@ -185,8 +172,8 @@ const UsersPage = () => {
                                                             {user.avatar}
                                                         </div>
                                                         <div>
-                                                            <p className="font-semibold text-gray-800">{user.name}</p>
-                                                            <p className="text-gray-400 text-xs font-mono">{user.id}</p>
+                                                            <p className="font-semibold text-gray-800 dark:text-gray-200">{user.name}</p>
+                                                            <p className="text-gray-400 dark:text-gray-500 text-xs font-mono">{user.id}</p>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -194,10 +181,10 @@ const UsersPage = () => {
                                                 {/* Contact */}
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col gap-1">
-                                                        <span className="flex items-center gap-1.5 text-gray-600 text-xs">
-                                                            <Mail size={12} className="text-gray-400" /> {user.email}
+                                                        <span className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 text-xs">
+                                                            <Mail size={12} className="text-gray-400 dark:text-gray-500" /> {user.email}
                                                         </span>
-                                                        <span className="flex items-center gap-1.5 text-gray-400 text-xs">
+                                                        <span className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 text-xs">
                                                             <Phone size={12} /> {user.phone}
                                                         </span>
                                                     </div>
@@ -205,7 +192,7 @@ const UsersPage = () => {
 
                                                 {/* Role */}
                                                 <td className="px-6 py-4">
-                                                    <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${user.role === "Admin" ? "bg-purple-100 text-purple-600" : "bg-blue-50 text-blue-600"}`}>
+                                                    <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${user.role === "Admin" ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" : "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"}`}>
                                                         {user.role === "Admin" && <Shield size={11} />}
                                                         {user.role}
                                                     </span>
@@ -213,12 +200,12 @@ const UsersPage = () => {
 
                                                 {/* Cycles */}
                                                 <td className="px-6 py-4">
-                                                    <span className="font-bold text-gray-800">{user.cycles}</span>
-                                                    <span className="text-gray-400 text-xs ml-1">cycles</span>
+                                                    <span className="font-bold text-gray-800 dark:text-gray-200">{user.cycles}</span>
+                                                    <span className="text-gray-400 dark:text-gray-500 text-xs ml-1">cycles</span>
                                                 </td>
 
                                                 {/* Joined */}
-                                                <td className="px-6 py-4 text-gray-500 text-xs">{user.joined}</td>
+                                                <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs">{user.joined}</td>
 
                                                 {/* Status */}
                                                 <td className="px-6 py-4">
@@ -232,15 +219,15 @@ const UsersPage = () => {
                                                 <td className="px-6 py-4 relative">
                                                     <button
                                                         onClick={() => setOpenMenu(openMenu === user.id ? null : user.id)}
-                                                        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                                                        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                                                     >
                                                         <MoreVertical size={16} />
                                                     </button>
                                                     {openMenu === user.id && (
-                                                        <div className="absolute right-6 top-10 w-40 bg-white border border-gray-100 rounded-xl shadow-lg z-20 overflow-hidden">
-                                                            <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">View Profile</button>
-                                                            <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">Edit User</button>
-                                                            <button className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors">Deactivate</button>
+                                                        <div className="absolute right-6 top-10 w-40 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-lg z-20 overflow-hidden">
+                                                            <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">View Profile</button>
+                                                            <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Edit User</button>
+                                                            <button className="w-full text-left px-4 py-2.5 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors">Deactivate</button>
                                                         </div>
                                                     )}
                                                 </td>
@@ -252,15 +239,15 @@ const UsersPage = () => {
                         </div>
 
                         {/* Pagination */}
-                        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
-                            <p className="text-gray-400 text-sm">
-                                Showing <span className="font-semibold text-gray-700">{Math.min((page - 1) * ITEMS_PER_PAGE + 1, filtered.length)}–{Math.min(page * ITEMS_PER_PAGE, filtered.length)}</span> of <span className="font-semibold text-gray-700">{filtered.length}</span> users
+                        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+                            <p className="text-gray-400 dark:text-gray-500 text-sm">
+                                Showing <span className="font-semibold text-gray-700 dark:text-gray-300">{Math.min((page - 1) * ITEMS_PER_PAGE + 1, filtered.length)}–{Math.min(page * ITEMS_PER_PAGE, filtered.length)}</span> of <span className="font-semibold text-gray-700 dark:text-gray-300">{filtered.length}</span> users
                             </p>
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                                     disabled={page === 1}
-                                    className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                    className="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <ChevronLeft size={14} />
                                 </button>
@@ -268,7 +255,7 @@ const UsersPage = () => {
                                     <button
                                         key={p}
                                         onClick={() => setPage(p)}
-                                        className={`w-8 h-8 rounded-lg text-sm font-semibold transition-colors ${page === p ? "bg-green-500 text-white shadow-sm" : "border border-gray-200 text-gray-500 hover:bg-gray-50"}`}
+                                        className={`w-8 h-8 rounded-lg text-sm font-semibold transition-colors ${page === p ? "bg-green-500 text-white shadow-sm" : "border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"}`}
                                     >
                                         {p}
                                     </button>
@@ -276,7 +263,7 @@ const UsersPage = () => {
                                 <button
                                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={page === totalPages || totalPages === 0}
-                                    className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                    className="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <ChevronRight size={14} />
                                 </button>
