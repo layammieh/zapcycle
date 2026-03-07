@@ -6,6 +6,8 @@ import {
     Zap, Users, TrendingUp, RefreshCw, LogOut, Bell, Settings, LayoutDashboard, ChevronUp, ChevronDown,
 } from "lucide-react";
 import Navbar from "./components/Navbar";
+import StatCard from "./components/StatCard";
+import TopBar from "./components/TopBar";
 import { useNavigate } from "react-router-dom";
 
 // ── Sample Data ──────────────────────────────────────────────────────────────
@@ -45,23 +47,6 @@ const recentActivity = [
     { id: "ZC-005", user: "Liza Bautista", action: "Cycle Completed", time: "31 min ago", status: "done" },
 ];
 
-// ── Stat Card ─────────────────────────────────────────────────────────────────
-const StatCard = ({ icon: Icon, label, value, change, positive, color }) => (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
-        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${color}`}>
-            <Icon size={26} className="text-white" />
-        </div>
-        <div className="flex-1">
-            <p className="text-gray-500 text-sm font-medium">{label}</p>
-            <p className="text-2xl font-bold text-gray-900 mt-0.5">{value}</p>
-        </div>
-        <div className={`flex items-center gap-1 text-sm font-semibold ${positive ? "text-green-500" : "text-red-400"}`}>
-            {positive ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            {change}
-        </div>
-    </div>
-);
-
 const Dashboard = () => {
     const navigate = useNavigate();
     const [activeNav, setActiveNav] = useState("dashboard");
@@ -76,28 +61,14 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors">
             <Navbar activeNav="dashboard" />
 
             {/* ── Main Content ── */}
             <main className="ml-64 flex-1 flex flex-col">
 
                 {/* Top Bar */}
-                <header className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
-                        <p className="text-gray-400 text-sm">Welcome back! Here's what's happening.</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <button className="relative w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors">
-                            <Bell size={18} />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full"></span>
-                        </button>
-                        <div className="w-10 h-10 rounded-xl bg-green-500 flex items-center justify-center text-white font-bold text-sm">
-                            A
-                        </div>
-                    </div>
-                </header>
+                <TopBar title="Dashboard" subtitle="Welcome back! Here's what's happening." />
 
                 {/* Page Body */}
                 <div className="p-8 flex flex-col gap-8">
@@ -114,13 +85,13 @@ const Dashboard = () => {
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
                         {/* Area Chart — Cycles Over Time */}
-                        <div className="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <div className="xl:col-span-2 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 transition-colors">
                             <div className="flex items-center justify-between mb-6">
                                 <div>
-                                    <h2 className="text-base font-bold text-gray-900">Cycles Over Time</h2>
-                                    <p className="text-gray-400 text-sm">Monthly cycle completions</p>
+                                    <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Cycles Over Time</h2>
+                                    <p className="text-gray-400 dark:text-gray-500 text-sm">Monthly cycle completions</p>
                                 </div>
-                                <span className="text-xs font-semibold bg-green-100 text-green-600 px-3 py-1 rounded-full">Last 7 months</span>
+                                <span className="text-xs font-semibold bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-500 px-3 py-1 rounded-full">Last 7 months</span>
                             </div>
                             <ResponsiveContainer width="100%" height={220}>
                                 <AreaChart data={cyclesData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
@@ -143,10 +114,10 @@ const Dashboard = () => {
                         </div>
 
                         {/* Pie Chart — Unit Status */}
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 transition-colors">
                             <div className="mb-6">
-                                <h2 className="text-base font-bold text-gray-900">Unit Status</h2>
-                                <p className="text-gray-400 text-sm">Current fleet breakdown</p>
+                                <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Unit Status</h2>
+                                <p className="text-gray-400 dark:text-gray-500 text-sm">Current fleet breakdown</p>
                             </div>
                             <ResponsiveContainer width="100%" height={220}>
                                 <PieChart>
@@ -176,10 +147,10 @@ const Dashboard = () => {
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
                         {/* Bar Chart — Daily Energy */}
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 transition-colors">
                             <div className="mb-6">
-                                <h2 className="text-base font-bold text-gray-900">Daily Energy (kWh)</h2>
-                                <p className="text-gray-400 text-sm">This week's consumption</p>
+                                <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Daily Energy (kWh)</h2>
+                                <p className="text-gray-400 dark:text-gray-500 text-sm">This week's consumption</p>
                             </div>
                             <ResponsiveContainer width="100%" height={200}>
                                 <BarChart data={energyData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }} barSize={18}>
@@ -196,18 +167,18 @@ const Dashboard = () => {
                         </div>
 
                         {/* Recent Activity Table */}
-                        <div className="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <div className="xl:col-span-2 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 transition-colors">
                             <div className="flex items-center justify-between mb-6">
                                 <div>
-                                    <h2 className="text-base font-bold text-gray-900">Recent Activity</h2>
-                                    <p className="text-gray-400 text-sm">Latest user actions</p>
+                                    <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Recent Activity</h2>
+                                    <p className="text-gray-400 dark:text-gray-500 text-sm">Latest user actions</p>
                                 </div>
-                                <button className="text-green-600 hover:text-green-700 text-sm font-semibold transition-colors">View All</button>
+                                <button className="text-green-600 dark:text-green-500 hover:text-green-700 dark:hover:text-green-400 text-sm font-semibold transition-colors">View All</button>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="text-gray-400 text-xs font-semibold uppercase tracking-wide border-b border-gray-100">
+                                        <tr className="text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wide border-b border-gray-100 dark:border-gray-800">
                                             <th className="pb-3 text-left">ID</th>
                                             <th className="pb-3 text-left">User</th>
                                             <th className="pb-3 text-left">Action</th>
@@ -215,13 +186,13 @@ const Dashboard = () => {
                                             <th className="pb-3 text-left">Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-50">
+                                    <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
                                         {recentActivity.map((row) => (
-                                            <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="py-3.5 text-gray-400 font-mono text-xs">{row.id}</td>
-                                                <td className="py-3.5 font-medium text-gray-800">{row.user}</td>
-                                                <td className="py-3.5 text-gray-600">{row.action}</td>
-                                                <td className="py-3.5 text-gray-400">{row.time}</td>
+                                            <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                                <td className="py-3.5 text-gray-400 dark:text-gray-500 font-mono text-xs">{row.id}</td>
+                                                <td className="py-3.5 font-medium text-gray-800 dark:text-gray-200">{row.user}</td>
+                                                <td className="py-3.5 text-gray-600 dark:text-gray-400">{row.action}</td>
+                                                <td className="py-3.5 text-gray-400 dark:text-gray-500">{row.time}</td>
                                                 <td className="py-3.5">
                                                     <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusBadge(row.status)}`}>
                                                         {row.status}
