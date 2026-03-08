@@ -5,6 +5,8 @@ import {
     Settings,
     LogOut,
     X,
+    Truck,
+    RefreshCw,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../../assets/zapcycle_logo.png";
@@ -16,6 +18,8 @@ const Sidebar = ({ activeNav }) => {
     const handleNavClick = (id) => {
         if (id === "dashboard") navigate("/admin/dashboard");
         if (id === "users") navigate("/admin/users");
+        if (id === "collectors") navigate("/admin/collectors");
+        if (id === "requests") navigate("/admin/requests");
         if (id === "settings") navigate("/admin/settings");
     };
 
@@ -46,6 +50,8 @@ const Sidebar = ({ activeNav }) => {
                     {[
                         { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
                         { id: "users", label: "Users", icon: Users },
+                        { id: "collectors", label: "Collectors", icon: Truck },
+                        { id: "requests", label: "Pickup Requests", icon: RefreshCw },
                         { id: "settings", label: "Settings", icon: Settings },
                     ].map(({ id, label, icon: Icon }) => (
                         <button
@@ -53,7 +59,7 @@ const Sidebar = ({ activeNav }) => {
                             onClick={() => handleNavClick(id)}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all w-full text-left
                         ${activeNav === id
-                                    ? "bg-green-500 text-white shadow-md shadow-green-200 dark:shadow-none"
+                                    ? "bg-[#37B26C] text-white shadow-md shadow-green-200 dark:shadow-none"
                                     : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200"
                                 }`}
                         >

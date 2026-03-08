@@ -1,29 +1,25 @@
 import React, { useState } from "react";
 import {
     Users, TrendingUp, RefreshCw, LogOut, Bell, Settings, LayoutDashboard, Search, Filter, MoreVertical, UserPlus,
-    CheckCircle, XCircle, Clock, Mail, Phone, Shield, ChevronLeft, ChevronRight,
+    CheckCircle, XCircle, Clock, Mail, Phone, Shield, ChevronLeft, ChevronRight, X, Pencil, Trash2
 } from "lucide-react";
 import Navbar from "./components/Navbar";
 import TopBar from "./components/TopBar";
+import ConfirmationModal from "./components/ConfirmationModal";
 import { useNavigate } from "react-router-dom";
 
-const usersData = [
+// ── Initial Data ──
+const initialUsers = [
     { id: "USR-001", name: "Maria Santos", email: "maria.santos@email.com", phone: "+63 912 345 6789", role: "Member", cycles: 42, status: "active", joined: "Jan 12, 2025", avatar: "MS" },
     { id: "USR-002", name: "Juan Dela Cruz", email: "juan.delacruz@email.com", phone: "+63 917 234 5678", role: "Member", cycles: 31, status: "active", joined: "Jan 18, 2025", avatar: "JD" },
     { id: "USR-003", name: "Ana Reyes", email: "ana.reyes@email.com", phone: "+63 918 345 6789", role: "Admin", cycles: 0, status: "active", joined: "Feb 01, 2025", avatar: "AR" },
     { id: "USR-004", name: "Carlo Mendoza", email: "carlo.mendoza@email.com", phone: "+63 919 456 7890", role: "Member", cycles: 18, status: "inactive", joined: "Dec 05, 2024", avatar: "CM" },
     { id: "USR-005", name: "Liza Bautista", email: "liza.bautista@email.com", phone: "+63 920 567 8901", role: "Member", cycles: 57, status: "active", joined: "Nov 22, 2024", avatar: "LB" },
-    { id: "USR-006", name: "Ramon Torres", email: "ramon.torres@email.com", phone: "+63 921 678 9012", role: "Member", cycles: 9, status: "pending", joined: "Feb 10, 2025", avatar: "RT" },
-    { id: "USR-007", name: "Grace Villanueva", email: "grace.villanueva@email.com", phone: "+63 922 789 0123", role: "Member", cycles: 74, status: "active", joined: "Oct 14, 2024", avatar: "GV" },
-    { id: "USR-008", name: "Paolo Ocampo", email: "paolo.ocampo@email.com", phone: "+63 923 890 1234", role: "Member", cycles: 3, status: "inactive", joined: "Feb 14, 2025", avatar: "PO" },
-    { id: "USR-009", name: "Celine Castro", email: "celine.castro@email.com", phone: "+63 924 901 2345", role: "Member", cycles: 29, status: "active", joined: "Jan 30, 2025", avatar: "CC" },
-    { id: "USR-010", name: "Marco Ramos", email: "marco.ramos@email.com", phone: "+63 925 012 3456", role: "Member", cycles: 11, status: "pending", joined: "Feb 16, 2025", avatar: "MR" },
 ];
 
 const AVATAR_COLORS = [
     "bg-blue-500", "bg-purple-500", "bg-pink-500",
     "bg-indigo-500", "bg-teal-500", "bg-orange-500",
-    "bg-cyan-500", "bg-rose-500", "bg-amber-500", "bg-lime-500",
 ];
 
 const statusConfig = {
@@ -34,202 +30,195 @@ const statusConfig = {
 
 const ITEMS_PER_PAGE = 7;
 
-// ── Users Page ────────────────────────────────────────────────────────────────
 const UsersPage = () => {
     const navigate = useNavigate();
-    const [activeNav, setActiveNav] = useState("users");
+    const [users, setUsers] = useState(initialUsers);
     const [search, setSearch] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
     const [page, setPage] = useState(1);
-    const [openMenu, setOpenMenu] = useState(null);
 
-    // Filter & search
-    const filtered = usersData.filter((u) => {
-        const matchSearch =
-            u.name.toLowerCase().includes(search.toLowerCase()) ||
+    // Modals & Action State
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+    // Data States
+    const [activeUser, setActiveUser] = useState(null);
+    const [formData, setFormData] = useState({ name: "", email: "", role: "Member", status: "active" });
+    const [confirmAction, setConfirmAction] = useState({ type: '', id: '', title: '', message: '' });
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleAddSubmit = (e) => {
+        e.preventDefault();
+        const newUser = {
+            id: `USR-00${users.length + 1}`,
+            ...formData,
+            phone: "+63 --- --- ----",
+            cycles: 0,
+            joined: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+            avatar: formData.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
+        };
+        setUsers([newUser, ...users]);
+        setShowAddModal(false);
+        setFormData({ name: "", email: "", role: "Member", status: "active" });
+    };
+
+    const handleEditSubmit = (e) => {
+        e.preventDefault();
+        const updatedAvatar = formData.name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+        setUsers(users.map(u => (u.id === activeUser.id ? { ...u, ...formData, avatar: updatedAvatar } : u)));
+        setShowEditModal(false);
+        setActiveUser(null);
+        setFormData({ name: "", email: "", role: "Member", status: "active" });
+    };
+
+    const startEdit = (user) => {
+        setActiveUser(user);
+        setFormData({ name: user.name, email: user.email, role: user.role, status: user.status });
+        setShowEditModal(true);
+    };
+
+    const confirmDelete = (id, name) => {
+        setConfirmAction({
+            type: 'delete',
+            id,
+            title: 'Delete User',
+            message: `Are you sure you want to permanently delete ${name}? This action cannot be undone.`
+        });
+        setShowConfirmModal(true);
+    };
+
+    const confirmToggleStatus = (user) => {
+        const isSuspending = user.status === 'active';
+        setConfirmAction({
+            type: 'status',
+            id: user.id,
+            title: isSuspending ? 'Suspend User' : 'Activate User',
+            message: `Are you sure you want to ${isSuspending ? 'suspend' : 'activate'} ${user.name}?`
+        });
+        setShowConfirmModal(true);
+    };
+
+    const handleConfirmAction = () => {
+        if (confirmAction.type === 'delete') {
+            setUsers(users.filter(u => u.id !== confirmAction.id));
+        } else if (confirmAction.type === 'status') {
+            setUsers(users.map(u =>
+                u.id === confirmAction.id ? { ...u, status: u.status === 'active' ? 'inactive' : 'active' } : u
+            ));
+        }
+        setShowConfirmModal(false);
+    };
+
+    const filtered = users.filter((u) => {
+        const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) ||
             u.email.toLowerCase().includes(search.toLowerCase()) ||
             u.id.toLowerCase().includes(search.toLowerCase());
         const matchStatus = filterStatus === "all" || u.status === filterStatus;
         return matchSearch && matchStatus;
     });
 
-    const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
     const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
-    // Summary counts
-    const counts = {
-        total: usersData.length,
-        active: usersData.filter((u) => u.status === "active").length,
-        inactive: usersData.filter((u) => u.status === "inactive").length,
-        pending: usersData.filter((u) => u.status === "pending").length,
-    };
-
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors text-gray-900 dark:text-gray-100">
             <Navbar activeNav="users" />
 
-            {/* ── Main Content ── */}
-            <main className="ml-64 flex-1 flex flex-col">
+            <main className="ml-64 flex-1 flex flex-col h-screen overflow-hidden">
+                <TopBar title="User Management" />
 
-                {/* Top Bar */}
-                <TopBar title="Users" subtitle="Manage and monitor all registered users." />
-
-                {/* Page Body */}
-                <div className="p-8 flex flex-col gap-6">
-
-                    {/* ── Summary Cards ── */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        {[
-                            { label: "Total Users", value: counts.total, bg: "bg-blue-50", text: "text-blue-600", icon: Users },
-                            { label: "Active", value: counts.active, bg: "bg-green-50", text: "text-green-600", icon: CheckCircle },
-                            { label: "Inactive", value: counts.inactive, bg: "bg-gray-50", text: "text-gray-500", icon: XCircle },
-                            { label: "Pending", value: counts.pending, bg: "bg-yellow-50", text: "text-yellow-600", icon: Clock },
-                        ].map(({ label, value, bg, text, icon: Icon }) => (
-                            <div key={label} className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-5 flex items-center gap-4 transition-colors">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${bg}`}>
-                                    <Icon size={22} className={text} />
-                                </div>
-                                <div>
-                                    <p className="text-gray-400 dark:text-gray-500 text-xs font-medium">{label}</p>
-                                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{value}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* ── Table Card ── */}
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
-
-                        {/* Table Header / Filters */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-5 border-b border-gray-100 dark:border-gray-800">
-                            {/* Search */}
-                            <div className="relative w-full sm:w-72">
+                <div className="p-8 flex flex-col gap-6 flex-1 overflow-auto">
+                    {/* Toolbar */}
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-4 transition-colors">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="relative w-full sm:w-80">
                                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                                 <input
                                     type="text"
-                                    placeholder="Search by name, email or ID…"
+                                    placeholder="Search users..."
                                     value={search}
-                                    onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                                    className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600"
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-100 dark:border-gray-800 bg-transparent text-sm focus:ring-2 focus:ring-green-400 outline-none transition-all dark:bg-gray-800/20"
                                 />
                             </div>
-
-                            <div className="flex items-center gap-3">
-                                {/* Status filter */}
-                                <div className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl px-3 py-2">
-                                    <Filter size={14} className="text-gray-400 dark:text-gray-500" />
-                                    <select
-                                        value={filterStatus}
-                                        onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
-                                        className="bg-transparent text-sm text-gray-600 dark:text-gray-300 focus:outline-none"
-                                    >
-                                        <option value="all">All Status</option>
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                        <option value="pending">Pending</option>
-                                    </select>
-                                </div>
-
-                                {/* Add User */}
-                                <button className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-sm shadow-green-200">
-                                    <UserPlus size={15} />
-                                    Add User
-                                </button>
-                            </div>
+                            <button
+                                onClick={() => setShowAddModal(true)}
+                                className="bg-[#37B26C] text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-green-600 transition-all flex items-center gap-2 shadow-lg shadow-green-100 dark:shadow-none active:scale-95"
+                            >
+                                <UserPlus size={16} /> Add User
+                            </button>
                         </div>
+                    </div>
 
-                        {/* Table */}
+                    {/* Table */}
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden transition-colors">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wide border-b border-gray-100 dark:border-gray-800">
-                                        <th className="px-6 pb-3 pt-4 text-left">User</th>
-                                        <th className="px-6 pb-3 pt-4 text-left">Contact</th>
-                                        <th className="px-6 pb-3 pt-4 text-left">Role</th>
-                                        <th className="px-6 pb-3 pt-4 text-left">Cycles</th>
-                                        <th className="px-6 pb-3 pt-4 text-left">Joined</th>
-                                        <th className="px-6 pb-3 pt-4 text-left">Status</th>
-                                        <th className="px-6 pb-3 pt-4 text-left"></th>
+                                    <tr className="bg-gray-50/50 dark:bg-gray-800/50 text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wide border-b border-gray-100 dark:border-gray-800 text-left">
+                                        <th className="px-6 py-4">User Details</th>
+                                        <th className="px-6 py-4 text-center">Role</th>
+                                        <th className="px-6 py-4 text-center">Status</th>
+                                        <th className="px-6 py-4">Joined</th>
+                                        <th className="px-6 py-4 text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
-                                    {paginated.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={7} className="py-12 text-center text-gray-400 text-sm">
-                                                No users found matching your search.
-                                            </td>
-                                        </tr>
-                                    ) : paginated.map((user, idx) => {
+                                <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50 text-gray-700 dark:text-gray-300">
+                                    {paginated.map(user => {
                                         const sc = statusConfig[user.status];
                                         const StatusIcon = sc.icon;
-                                        const colorIdx = (parseInt(user.id.replace("USR-", "")) - 1) % AVATAR_COLORS.length;
                                         return (
-                                            <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors relative">
-                                                {/* User */}
+                                            <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors group">
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-3">
-                                                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white text-xs font-bold ${AVATAR_COLORS[colorIdx]}`}>
+                                                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-xs bg-gradient-to-br from-green-500 to-green-600 shadow-sm`}>
                                                             {user.avatar}
                                                         </div>
                                                         <div>
-                                                            <p className="font-semibold text-gray-800 dark:text-gray-200">{user.name}</p>
-                                                            <p className="text-gray-400 dark:text-gray-500 text-xs font-mono">{user.id}</p>
+                                                            <div className="font-semibold text-gray-900 dark:text-gray-100">{user.name}</div>
+                                                            <div className="text-xs text-gray-400">{user.email}</div>
                                                         </div>
                                                     </div>
                                                 </td>
-
-                                                {/* Contact */}
-                                                <td className="px-6 py-4">
-                                                    <div className="flex flex-col gap-1">
-                                                        <span className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400 text-xs">
-                                                            <Mail size={12} className="text-gray-400 dark:text-gray-500" /> {user.email}
-                                                        </span>
-                                                        <span className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500 text-xs">
-                                                            <Phone size={12} /> {user.phone}
-                                                        </span>
-                                                    </div>
-                                                </td>
-
-                                                {/* Role */}
-                                                <td className="px-6 py-4">
-                                                    <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${user.role === "Admin" ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" : "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"}`}>
-                                                        {user.role === "Admin" && <Shield size={11} />}
+                                                <td className="px-6 py-4 text-center">
+                                                    <span className={`px-2.5 py-1 rounded-lg text-[10px] uppercase font-bold tracking-tight ${user.role === 'Admin' ? 'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'}`}>
                                                         {user.role}
                                                     </span>
                                                 </td>
-
-                                                {/* Cycles */}
                                                 <td className="px-6 py-4">
-                                                    <span className="font-bold text-gray-800 dark:text-gray-200">{user.cycles}</span>
-                                                    <span className="text-gray-400 dark:text-gray-500 text-xs ml-1">cycles</span>
+                                                    <div className="flex justify-center">
+                                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase transition-colors ${sc.cls}`}>
+                                                            <StatusIcon size={12} /> {sc.label}
+                                                        </span>
+                                                    </div>
                                                 </td>
-
-                                                {/* Joined */}
-                                                <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs">{user.joined}</td>
-
-                                                {/* Status */}
-                                                <td className="px-6 py-4">
-                                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${sc.cls}`}>
-                                                        <StatusIcon size={12} />
-                                                        {sc.label}
-                                                    </span>
-                                                </td>
-
-                                                {/* Actions */}
-                                                <td className="px-6 py-4 relative">
-                                                    <button
-                                                        onClick={() => setOpenMenu(openMenu === user.id ? null : user.id)}
-                                                        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                                                    >
-                                                        <MoreVertical size={16} />
-                                                    </button>
-                                                    {openMenu === user.id && (
-                                                        <div className="absolute right-6 top-10 w-40 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-lg z-20 overflow-hidden">
-                                                            <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">View Profile</button>
-                                                            <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Edit User</button>
-                                                            <button className="w-full text-left px-4 py-2.5 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors">Deactivate</button>
-                                                        </div>
-                                                    )}
+                                                <td className="px-6 py-4 text-xs font-semibold text-gray-400">{user.joined}</td>
+                                                <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                    <div className="flex items-center justify-end gap-2 transition-all">
+                                                        <button
+                                                            onClick={() => startEdit(user)}
+                                                            className="p-2 hover:bg-green-50 dark:hover:bg-green-900/20 text-gray-400 hover:text-[#37B26C] rounded-lg transition-colors border border-transparent hover:border-green-100 dark:hover:border-green-900/30"
+                                                            title="Edit Details"
+                                                        ><Pencil size={15} /></button>
+                                                        <button
+                                                            onClick={() => confirmToggleStatus(user)}
+                                                            className={`p-2 rounded-lg transition-colors border border-transparent ${user.status === 'active' ? 'text-orange-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-100 dark:hover:border-orange-900/30' : 'text-green-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-100 dark:hover:border-green-900/30'}`}
+                                                            title={user.status === 'active' ? 'Suspend Account' : 'Activate Account'}
+                                                        ><Shield size={15} /></button>
+                                                        <button
+                                                            onClick={() => confirmDelete(user.id, user.name)}
+                                                            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 rounded-lg transition-colors border border-transparent hover:border-red-100 dark:hover:border-red-900/30" title="Delete User"
+                                                        ><Trash2 size={15} /></button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         );
@@ -237,46 +226,66 @@ const UsersPage = () => {
                                 </tbody>
                             </table>
                         </div>
-
-                        {/* Pagination */}
-                        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-800">
-                            <p className="text-gray-400 dark:text-gray-500 text-sm">
-                                Showing <span className="font-semibold text-gray-700 dark:text-gray-300">{Math.min((page - 1) * ITEMS_PER_PAGE + 1, filtered.length)}–{Math.min(page * ITEMS_PER_PAGE, filtered.length)}</span> of <span className="font-semibold text-gray-700 dark:text-gray-300">{filtered.length}</span> users
-                            </p>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                    disabled={page === 1}
-                                    className="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    <ChevronLeft size={14} />
-                                </button>
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                                    <button
-                                        key={p}
-                                        onClick={() => setPage(p)}
-                                        className={`w-8 h-8 rounded-lg text-sm font-semibold transition-colors ${page === p ? "bg-green-500 text-white shadow-sm" : "border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"}`}
-                                    >
-                                        {p}
-                                    </button>
-                                ))}
-                                <button
-                                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                                    disabled={page === totalPages || totalPages === 0}
-                                    className="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    <ChevronRight size={14} />
-                                </button>
-                            </div>
-                        </div>
                     </div>
-
                 </div>
             </main>
 
-            {/* Click-outside to close menu */}
-            {openMenu && (
-                <div className="fixed inset-0 z-10" onClick={() => setOpenMenu(null)} />
+            {/* Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={showConfirmModal}
+                onClose={() => setShowConfirmModal(false)}
+                onConfirm={handleConfirmAction}
+                title={confirmAction.title}
+                message={confirmAction.message}
+                type={confirmAction.type === 'delete' ? 'danger' : 'warning'}
+                confirmText={confirmAction.type === 'delete' ? 'Delete' : (confirmAction.title.includes('Suspend') ? 'Suspend' : 'Activate')}
+            />
+
+            {/* Add / Edit User Modal */}
+            {(showAddModal || showEditModal) && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 dark:border-gray-800 scale-in-center">
+                        <div className="px-8 py-6 border-b border-gray-50 dark:border-gray-800 flex items-center justify-between">
+                            <h3 className="text-xl font-bold bg-gradient-to-r from-[#37B26C] to-green-400 bg-clip-text text-transparent">
+                                {showEditModal ? 'Update User' : 'Add System User'}
+                            </h3>
+                            <button onClick={() => { setShowAddModal(false); setShowEditModal(false); }} className="p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full text-gray-400 transition-colors"><X size={20} /></button>
+                        </div>
+                        <form onSubmit={showEditModal ? handleEditSubmit : handleAddSubmit} className="p-8 flex flex-col gap-5">
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+                                <input type="text" name="name" required value={formData.name} onChange={handleInputChange} className="w-full px-5 py-3 rounded-2xl border border-gray-100 dark:border-gray-800 bg-transparent dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-green-400 outline-none transition-all" placeholder="Enter full name" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                                <input type="email" name="email" required value={formData.email} onChange={handleInputChange} className="w-full px-5 py-3 rounded-2xl border border-gray-100 dark:border-gray-800 bg-transparent dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-green-400 outline-none transition-all" placeholder="user@example.com" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Role</label>
+                                    <select name="role" value={formData.role} onChange={handleInputChange} className="w-full px-5 py-3 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-green-400 outline-none transition-all">
+                                        <option value="Member">Member</option>
+                                        <option value="Admin">Admin</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Status</label>
+                                    <select name="status" value={formData.status} onChange={handleInputChange} className="w-full px-5 py-3 rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-green-400 outline-none transition-all">
+                                        <option value="active">Active</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="flex gap-4 mt-4">
+                                <button type="button" onClick={() => { setShowAddModal(false); setShowEditModal(false); }} className="flex-1 px-5 py-3 rounded-2xl border border-gray-100 dark:border-gray-800 text-sm font-bold text-gray-500 hover:bg-gray-50 hover:text-gray-700 dark:hover:bg-gray-800 transition-all active:scale-95">Cancel</button>
+                                <button type="submit" className="flex-1 px-5 py-3 rounded-2xl bg-[#37B26C] text-white text-sm font-bold hover:bg-green-600 transition-all shadow-lg shadow-green-100 dark:shadow-none active:scale-95">
+                                    {showEditModal ? 'Update User' : 'Save User'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             )}
         </div>
     );
