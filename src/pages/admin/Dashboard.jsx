@@ -3,209 +3,112 @@ import {
     AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import {
-    Zap, Users, TrendingUp, RefreshCw, LogOut, Bell, Settings, LayoutDashboard, ChevronUp, ChevronDown,
+    Truck as TruckIcon, Users, TrendingUp, RefreshCw, LayoutDashboard, CheckCircle, Package, Clock
 } from "lucide-react";
 import Navbar from "./components/Navbar";
 import StatCard from "./components/StatCard";
 import TopBar from "./components/TopBar";
-import { useNavigate } from "react-router-dom";
 
-// ── Sample Data ──────────────────────────────────────────────────────────────
-const cyclesData = [
-    { month: "Aug", cycles: 120 },
-    { month: "Sep", cycles: 185 },
-    { month: "Oct", cycles: 210 },
-    { month: "Nov", cycles: 175 },
-    { month: "Dec", cycles: 240 },
-    { month: "Jan", cycles: 310 },
-    { month: "Feb", cycles: 295 },
+// ── ZapCycle Platform Data ──────────────────────────────────────────────────
+const requestTrends = [
+    { month: "Oct", requests: 45 },
+    { month: "Nov", requests: 120 },
+    { month: "Dec", requests: 185 },
+    { month: "Jan", requests: 240 },
+    { month: "Feb", requests: 310 },
+    { month: "Mar", requests: 425 },
 ];
 
-const energyData = [
-    { day: "Mon", kWh: 42 },
-    { day: "Tue", kWh: 58 },
-    { day: "Wed", kWh: 35 },
-    { day: "Thu", kWh: 71 },
-    { day: "Fri", kWh: 63 },
-    { day: "Sat", kWh: 89 },
-    { day: "Sun", kWh: 54 },
+const categoryData = [
+    { name: "Working", value: 35 },
+    { name: "Broken", value: 45 },
+    { name: "Scrap", value: 20 },
 ];
 
-const statusData = [
-    { name: "Active", value: 68 },
-    { name: "Idle", value: 20 },
-    { name: "Maintenance", value: 12 },
+const platformActivity = [
+    { id: "REQ-102", detail: "New Pickup Requested", user: "Maria Santos", time: "2 min ago", type: "new" },
+    { id: "COL-045", detail: "Collector Verified", user: "EcoPick Ltd.", time: "15 min ago", type: "system" },
+    { id: "REQ-098", detail: "Request Completed", user: "RecyclePros", time: "22 min ago", type: "done" },
+    { id: "REQ-101", detail: "Pickup Accepted", user: "Metro Junkshops", time: "1 hr ago", type: "active" },
 ];
 
-const STATUS_COLORS = ["#22c55e", "#facc15", "#f87171"];
-
-const recentActivity = [
-    { id: "ZC-001", user: "Maria Santos", action: "Cycle Started", time: "2 min ago", status: "active" },
-    { id: "ZC-002", user: "Juan Dela Cruz", action: "Cycle Completed", time: "8 min ago", status: "done" },
-    { id: "ZC-003", user: "Ana Reyes", action: "Account Created", time: "15 min ago", status: "new" },
-    { id: "ZC-004", user: "Carlo Mendoza", action: "Cycle Started", time: "22 min ago", status: "active" },
-    { id: "ZC-005", user: "Liza Bautista", action: "Cycle Completed", time: "31 min ago", status: "done" },
-];
+const COLORS = ["#37B26C", "#3b82f6", "#ef4444"];
 
 const Dashboard = () => {
-    const navigate = useNavigate();
-    const [activeNav, setActiveNav] = useState("dashboard");
-
-    const statusBadge = (status) => {
-        const map = {
-            active: "bg-green-100 text-green-700",
-            done: "bg-blue-100 text-blue-700",
-            new: "bg-purple-100 text-purple-700",
-        };
-        return map[status] || "bg-gray-100 text-gray-600";
-    };
-
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex transition-colors">
             <Navbar activeNav="dashboard" />
 
-            {/* ── Main Content ── */}
             <main className="ml-64 flex-1 flex flex-col">
+                <TopBar title="Platform Overview" />
 
-                {/* Top Bar */}
-                <TopBar title="Dashboard" subtitle="Welcome back! Here's what's happening." />
-
-                {/* Page Body */}
                 <div className="p-8 flex flex-col gap-8">
-
-                    {/* ── Stat Cards ── */}
+                    {/* ── Metric Cards ── */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-                        <StatCard icon={RefreshCw} label="Total Cycles" value="1,284" change="12%" positive color="bg-green-500" />
-                        <StatCard icon={Users} label="Active Users" value="348" change="8%" positive color="bg-blue-500" />
-                        <StatCard icon={Zap} label="Energy Saved (kWh)" value="9,420" change="5%" positive color="bg-yellow-400" />
-                        <StatCard icon={TrendingUp} label="Revenue" value="₱84,500" change="3%" positive={false} color="bg-purple-500" />
+                        <StatCard icon={Users} label="Total Users" value="1,482" change="+12%" positive color="bg-blue-500" />
+                        <StatCard icon={TruckIcon} label="Total Collectors" value="86" change="+5%" positive color="bg-[#37B26C]" />
+                        <StatCard icon={Package} label="Active Requests" value="42" change="8 new" positive color="bg-yellow-500" />
+                        <StatCard icon={CheckCircle} label="Completed Pickups" value="894" change="+18%" positive color="bg-green-600" />
                     </div>
 
-                    {/* ── Charts Row ── */}
+                    {/* ── Charts ── */}
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-                        {/* Area Chart — Cycles Over Time */}
                         <div className="xl:col-span-2 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 transition-colors">
-                            <div className="flex items-center justify-between mb-6">
-                                <div>
-                                    <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Cycles Over Time</h2>
-                                    <p className="text-gray-400 dark:text-gray-500 text-sm">Monthly cycle completions</p>
-                                </div>
-                                <span className="text-xs font-semibold bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-500 px-3 py-1 rounded-full">Last 7 months</span>
-                            </div>
-                            <ResponsiveContainer width="100%" height={220}>
-                                <AreaChart data={cyclesData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                            <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-6">Platform Growth (Requests)</h2>
+                            <ResponsiveContainer width="100%" height={250}>
+                                <AreaChart data={requestTrends}>
                                     <defs>
-                                        <linearGradient id="cycleGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#22c55e" stopOpacity={0.25} />
-                                            <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                                        <linearGradient id="colorReq" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#37B26C" stopOpacity={0.1} />
+                                            <stop offset="95%" stopColor="#37B26C" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                    <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                                    <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}
-                                        labelStyle={{ fontWeight: 600, color: "#111827" }}
-                                    />
-                                    <Area type="monotone" dataKey="cycles" stroke="#22c55e" strokeWidth={2.5} fill="url(#cycleGrad)" dot={{ r: 4, fill: "#22c55e", strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#9ca3af" }} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#9ca3af" }} />
+                                    <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', backgroundColor: "#1f2937" }} />
+                                    <Area type="monotone" dataKey="requests" stroke="#37B26C" fillOpacity={1} fill="url(#colorReq)" strokeWidth={3} />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
 
-                        {/* Pie Chart — Unit Status */}
                         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 transition-colors">
-                            <div className="mb-6">
-                                <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Unit Status</h2>
-                                <p className="text-gray-400 dark:text-gray-500 text-sm">Current fleet breakdown</p>
-                            </div>
-                            <ResponsiveContainer width="100%" height={220}>
+                            <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-6">Requests by Category</h2>
+                            <ResponsiveContainer width="100%" height={250}>
                                 <PieChart>
-                                    <Pie
-                                        data={statusData}
-                                        cx="50%"
-                                        cy="45%"
-                                        innerRadius={55}
-                                        outerRadius={80}
-                                        paddingAngle={4}
-                                        dataKey="value"
-                                    >
-                                        {statusData.map((_, i) => (
-                                            <Cell key={i} fill={STATUS_COLORS[i]} />
-                                        ))}
+                                    <Pie data={categoryData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                                        {categoryData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
                                     </Pie>
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}
-                                    />
-                                    <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: "12px", paddingTop: "12px" }} />
+                                    <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', backgroundColor: "#1f2937" }} />
+                                    <Legend iconType="circle" layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ color: "#9ca3af" }} />
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
 
-                    {/* ── Bottom Row ── */}
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-                        {/* Bar Chart — Daily Energy */}
-                        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 transition-colors">
-                            <div className="mb-6">
-                                <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Daily Energy (kWh)</h2>
-                                <p className="text-gray-400 dark:text-gray-500 text-sm">This week's consumption</p>
-                            </div>
-                            <ResponsiveContainer width="100%" height={200}>
-                                <BarChart data={energyData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }} barSize={18}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                                    <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                                    <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}
-                                        cursor={{ fill: "#f0fdf4" }}
-                                    />
-                                    <Bar dataKey="kWh" fill="#22c55e" radius={[6, 6, 0, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-
-                        {/* Recent Activity Table */}
-                        <div className="xl:col-span-2 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 transition-colors">
-                            <div className="flex items-center justify-between mb-6">
-                                <div>
-                                    <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Recent Activity</h2>
-                                    <p className="text-gray-400 dark:text-gray-500 text-sm">Latest user actions</p>
+                    {/* ── Recent Activity ── */}
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 transition-colors">
+                        <h2 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-6">Recent Activity Feed</h2>
+                        <div className="flex flex-col gap-4">
+                            {platformActivity.map((activity) => (
+                                <div key={activity.id} className="flex items-center justify-between py-3 border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 px-2 rounded-lg transition-colors">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${activity.type === 'new' ? 'bg-blue-50 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400' :
+                                            activity.type === 'done' ? 'bg-green-50 dark:bg-green-900/10 text-green-600 dark:text-green-400' : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                                            }`}>
+                                            {activity.type === 'new' ? <Clock size={18} /> :
+                                                activity.type === 'done' ? <CheckCircle size={18} /> : <RefreshCw size={18} />}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{activity.detail}</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">{activity.user} • {activity.time}</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] font-mono font-bold text-gray-400 dark:text-gray-500">{activity.id}</span>
                                 </div>
-                                <button className="text-green-600 dark:text-green-500 hover:text-green-700 dark:hover:text-green-400 text-sm font-semibold transition-colors">View All</button>
-                            </div>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead>
-                                        <tr className="text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wide border-b border-gray-100 dark:border-gray-800">
-                                            <th className="pb-3 text-left">ID</th>
-                                            <th className="pb-3 text-left">User</th>
-                                            <th className="pb-3 text-left">Action</th>
-                                            <th className="pb-3 text-left">Time</th>
-                                            <th className="pb-3 text-left">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
-                                        {recentActivity.map((row) => (
-                                            <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                                <td className="py-3.5 text-gray-400 dark:text-gray-500 font-mono text-xs">{row.id}</td>
-                                                <td className="py-3.5 font-medium text-gray-800 dark:text-gray-200">{row.user}</td>
-                                                <td className="py-3.5 text-gray-600 dark:text-gray-400">{row.action}</td>
-                                                <td className="py-3.5 text-gray-400 dark:text-gray-500">{row.time}</td>
-                                                <td className="py-3.5">
-                                                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusBadge(row.status)}`}>
-                                                        {row.status}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                            ))}
                         </div>
                     </div>
-
                 </div>
             </main>
         </div>
